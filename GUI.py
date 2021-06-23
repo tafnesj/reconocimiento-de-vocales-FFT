@@ -118,14 +118,10 @@ freq_mujeres = {'a':[903,1129,2031],'e':[430,648,2772],'i':[240,480,2897],'o':[4
 # Frecuencias hombres
 freq_hombres = train()
 
-
-
-
-
 def microphone():
     global RATE
     RATE = 44100
-    FRAMES = 2**15
+    FRAMES = 2**16
     duration = FRAMES/RATE
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True, frames_per_buffer=FRAMES)
@@ -138,9 +134,6 @@ def microphone():
     return data
 
 
-
-
-
 def play(data, channels, RATE):
     p = pyaudio.PyAudio()
     play = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, output=True)
@@ -148,9 +141,6 @@ def play(data, channels, RATE):
     play.stop_stream()
     play.close()
     p.terminate()
-
-
-
 
 
 def getNearestVowel(freq_funda, es_hombre=False):
@@ -185,7 +175,7 @@ def Select_file():
 
 def Run():
     gender = False
-    if restore() == "Masculino"
+    if restore() == "Masculino":
         gender = True  
         
     result = getNearestVowel(getFundamentalFrequencies(wave_file(filename)), gender)
@@ -198,6 +188,13 @@ def Play_record():
     play(data, channels, RATE)
     
 
+def Record():
+    gender = False
+    if restore() == "Masculino":
+        gender = True  
+    microphone_funda = getFundamentalFrequencies(microphone(), True)   
+    result = getNearestVowel(microphone_funda,gender)
+    result_lbl.configure(text="La vocal es: "+result)
 
 if __name__ == '__main__':
 
@@ -209,7 +206,7 @@ if __name__ == '__main__':
     
     input_lbl = Label(input_frame, text="Ingresa un audio:")
     search_btn = Button(input_frame, text="Buscar", command=Select_file)
-    record_btn = Button(input_frame, text="Grabar")
+    record_btn = Button(input_frame, text="Grabar", command=Record)
     play_btn = Button(input_frame, text="Reproducir", command=Play_record)
     gender_lbl = Label(input_frame, text="Selecciona una opcion: ")
     
