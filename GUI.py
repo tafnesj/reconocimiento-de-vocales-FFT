@@ -106,7 +106,7 @@ def train():
     num_hombres = 1
     for h in range(1,num_hombres+1):
         for v in ['a','e','i','o','u']:
-            freq_funda = getFundamentalFrequencies(wave_file(F"hombre_0{h}/{v}.wav"))
+            freq_funda = getFundamentalFrequencies(wave_file(F"hombre_0{h}/{v}.wav"),False)
 
             for x in range(3):
                 freq_av_h[v][x]+=freq_funda[x]/num_hombres
@@ -186,9 +186,8 @@ def Run():
 
 
 def Play_record():
-    
     channels = 2
-    RATE = 0
+    RATE = 44100
     play(data, channels, RATE)
     
 
