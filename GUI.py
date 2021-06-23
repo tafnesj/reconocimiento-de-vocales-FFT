@@ -4,7 +4,8 @@ from tkinter import filedialog
 from functools import partial
 # from matplotlib.backends.back_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 # from matplotlib.figure import Figure
-
+import numpy as np
+import pyaudio
 import wave
 import struct
 import numpy as np
@@ -43,6 +44,7 @@ def fft(signal):
 
 def wave_file(file):
     global RATE
+    global data
     FRAMES = 2**17
     wf = wave.open(file, "rb")
     RATE = wf.getframerate()
@@ -51,7 +53,7 @@ def wave_file(file):
     return data
 
 
-def getFundamentalFrequencies(data, plot=False):
+def getFundamentalFrequencies(data, plot=True):
     data = list(struct.unpack(str(len(data)//2) + 'h', data))
     SZ = 1
     while SZ < len(data):
@@ -104,6 +106,18 @@ freq_mujeres = {'a':[903,1129,2031],'e':[430,648,2772],'i':[240,480,2897],'o':[4
 # Frecuencias hombres
 freq_hombres = train()
 
+def graficar(data_x, data_y, legends, label_x, label_y, title, xlim = None):
+    for i in range(0, len(data_x)):
+        plt.plot(data_x[i], data_y[i], label = legends[i], marker = "o")
+    if xlim:
+        plt.xlim(xlim)
+    plt.grid(True)
+    plt.xlabel(label_x)
+    plt.ylabel(label_y)
+    plt.title(title)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), shadow=True, ncol=4)
+    plt.show()
+    plt.clf()
 
 
 
@@ -170,6 +184,14 @@ def Run():
     result_lbl.configure(text="La vocal es: "+result)
 
 
+def Play_record():
+    
+    channels = 2
+    RATE = 0
+    play(data, channels, RATE)
+    
+
+
 if __name__ == '__main__':
 
     window = Tk()
@@ -181,7 +203,7 @@ if __name__ == '__main__':
     input_lbl = Label(input_frame, text="Ingresa un audio:")
     search_btn = Button(input_frame, text="Buscar", command=Select_file)
     record_btn = Button(input_frame, text="Grabar")
-    play_btn = Button(input_frame, text="Reproducir")
+    play_btn = Button(input_frame, text="Reproducir" command=Play_record)
     gender_lbl = Label(input_frame, text="Selecciona una opcion: ")
     gender_combo = ttk.Combobox(input_frame, 
                             values = [
