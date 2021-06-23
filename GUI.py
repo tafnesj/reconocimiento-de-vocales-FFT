@@ -1,31 +1,44 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
+from functools import partial
 # from matplotlib.backends.back_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 # from matplotlib.figure import Figure
 
-# import pyaudio, wave
+import wave
 import struct
 import numpy as np
 import matplotlib.pyplot as plt
 import math
 import cmath
 
-
-def microphone():
-    global RATE
-    RATE = 44100
-    FRAMES = 2**15
-    duration = FRAMES/RATE
-    p = pyaudio.PyAudio()
-    stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True, frames_per_buffer=FRAMES)
-    # Leer la entrada del micrófono 
-    data = stream.read(FRAMES)
-    # Cerrar el micrófono
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
-    return data
+def reverseBits(x,h):
+    rev = '{:0{h}b}'.format(x, h=h)
+    return(int(rev[::-1], 2))
+    
+def fft(signal):
+    signal = list(np.copy(signal).astype(complex))
+    # Iteramos por todas las capas de abajo hacia arriba
+    n = len(signal)
+    h = int(math.log2(n))
+    for x in range(0,n):
+        rev_pos = reverseBits(x,h)
+        if(rev_pos<x):
+            signal[rev_pos], signal[x] = signal[x],signal[rev_pos]
+    for i in range(h-1,-1,-1):
+        sz = 1<<(h-i);
+        blocks = 1<<i;
+        w = [cmath.exp(-2j * cmath.pi * k / sz) for k in range(sz//2)]
+        # Procesamiento de cada bloque
+        for j in range(0,blocks):
+            start = sz*j
+            # Transformar bloque actual
+            for k in range(0, sz//2):
+                u = signal[start+k]
+                v = signal[start+k+(sz//2)] * w[k]
+                signal[start+k] = u+v
+                signal[start+k+(sz//2)] = u-v
+    return np.array(signal)
 
 
 def wave_file(file):
@@ -36,15 +49,6 @@ def wave_file(file):
     data = wf.readframes(FRAMES)
     wf.close()
     return data
-
-
-def play(data, channels, RATE):
-    p = pyaudio.PyAudio()
-    play = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, output=True)
-    play.write(data)
-    play.stop_stream()
-    play.close()
-    p.terminate()
 
 
 def getFundamentalFrequencies(data, plot=False):
@@ -83,7 +87,58 @@ def getFundamentalFrequencies(data, plot=False):
     return freq_funda
 
 
-def getNearestVowel(freq_funda, es_hombre=True):
+def train():
+    freq_av_h = {'a':[0,0,0],'e':[0,0,0],'i':[0,0,0],'o':[0,0,0],'u':[0,0,0]}
+    num_hombres = 1
+    for h in range(1,num_hombres+1):
+        for v in ['a','e','i','o','u']:
+            freq_funda = getFundamentalFrequencies(wave_file(F"hombre_0{h}/{v}.wav"))
+
+            for x in range(3):
+                freq_av_h[v][x]+=freq_funda[x]/num_hombres
+
+    return freq_av_h
+
+# Frecuencias mujeres
+freq_mujeres = {'a':[903,1129,2031],'e':[430,648,2772],'i':[240,480,2897],'o':[421,634,846],'u':[271,584,825]}
+# Frecuencias hombres
+freq_hombres = train()
+
+
+
+
+def microphone():
+    global RATE
+    RATE = 44100
+    FRAMES = 2**15
+    duration = FRAMES/RATE
+    p = pyaudio.PyAudio()
+    stream = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True, frames_per_buffer=FRAMES)
+    # Leer la entrada del micrófono 
+    data = stream.read(FRAMES)
+    # Cerrar el micrófono
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+    return data
+
+
+
+
+
+def play(data, channels, RATE):
+    p = pyaudio.PyAudio()
+    play = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, output=True)
+    play.write(data)
+    play.stop_stream()
+    play.close()
+    p.terminate()
+
+
+
+
+
+def getNearestVowel(freq_funda, es_hombre=False):
     min_dif = 1e9
     vowel = 'a'
     # Frecuencias en hombres
@@ -104,19 +159,19 @@ def getNearestVowel(freq_funda, es_hombre=True):
 
 
 def Select_file():
-    
+    global filename
     filename = filedialog.askopenfilename(initialdir = "./", title = "Selecciona un achivo")
+    input_lbl.config(text=filename)
+
 
 def Run():
-    print(filename)
+        
     result = getNearestVowel(getFundamentalFrequencies(wave_file(filename)))
     result_lbl.configure(text="La vocal es: "+result)
 
 
 if __name__ == '__main__':
-    
-    filename = ""
-    
+
     window = Tk()
     window.title("Deteccion de vocales")
     
