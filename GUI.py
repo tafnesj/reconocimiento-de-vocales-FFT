@@ -114,7 +114,7 @@ def train():
     return freq_av_h
 
 # Frecuencias mujeres
-freq_mujeres = {'a':[903,1129,2031],'e':[430,648,2772],'i':[240,480,2897],'o':[421,634,846],'u':[271,584,825]}
+freq_mujeres = {'a':[903,1129,2031],'e':[430,528,2772],'i':[240,480,2897],'o':[421,634,846],'u':[271,584,825]}
 # Frecuencias hombres
 freq_hombres = train()
 
