@@ -184,9 +184,11 @@ def Select_file():
 
 
 def Run():
-    gender = restore()
-    print(gender)
-    result = getNearestVowel(getFundamentalFrequencies(wave_file(filename)))
+    gender = False
+    if restore() == "Masculino"
+        gender = True  
+        
+    result = getNearestVowel(getFundamentalFrequencies(wave_file(filename)), gender)
     result_lbl.configure(text="La vocal es: "+result)
 
 
