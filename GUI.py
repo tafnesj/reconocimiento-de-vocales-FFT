@@ -33,7 +33,7 @@ if __name__ == '__main__':
     plot_frame = Frame(window)
     plot_frame.pack()
     
-
+    
     
     window.mainloop()
     
