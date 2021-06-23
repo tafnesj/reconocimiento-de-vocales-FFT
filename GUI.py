@@ -173,6 +173,10 @@ def getNearestVowel(freq_funda, es_hombre=False):
     return vowel
 
 
+def restore():
+    return option.get()    
+    
+
 def Select_file():
     global filename
     filename = filedialog.askopenfilename(initialdir = "./", title = "Selecciona un achivo")
@@ -180,7 +184,8 @@ def Select_file():
 
 
 def Run():
-        
+    gender = restore()
+    print(gender)
     result = getNearestVowel(getFundamentalFrequencies(wave_file(filename)))
     result_lbl.configure(text="La vocal es: "+result)
 
@@ -205,11 +210,14 @@ if __name__ == '__main__':
     record_btn = Button(input_frame, text="Grabar")
     play_btn = Button(input_frame, text="Reproducir", command=Play_record)
     gender_lbl = Label(input_frame, text="Selecciona una opcion: ")
-    gender_combo = ttk.Combobox(input_frame, 
+    
+    option = StringVar()
+    gender_combo = ttk.Combobox(input_frame,textvariable=option, 
                             values = [
                                 "Masculino",
                                 "Femenino"
-                            ])
+                            ])    
+    
     exec_btn = Button(input_frame, text="Ejecutar", command=Run)
     
     
@@ -219,7 +227,9 @@ if __name__ == '__main__':
     play_btn.grid(row=2,column=2)
     gender_lbl.grid(row=3,column=1)
     gender_combo.grid(row=3,column=2)
-    exec_btn.grid(row=4)
+    exec_btn.grid(row=4,column=1)
+    
+    gender_combo.current(1)
     
     result_frame = Frame(window)
     result_frame.pack()
