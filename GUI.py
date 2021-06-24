@@ -160,7 +160,7 @@ def microphone():
 
 def play(data, channels, RATE):
     p = pyaudio.PyAudio()
-    play = p.open(format=pyaudio.paInt16, channels=channels, rate=RATE, output=True)
+    play = p.open(format=pyaudio.paInt16, channels=1, rate=RATE, output=True)
     play.write(data)
     play.stop_stream()
     play.close()
@@ -223,12 +223,12 @@ def Record():
     result_lbl.configure(text="La vocal es: "+result)
 
 if __name__ == '__main__':
-    # creacion de la ventana de tkinter 
+    # creación de la ventana de tkinter 
     window = Tk()
     window.title("Deteccion de vocales")
-    window.geometry('500x300')
+    window.geometry('1500x300')
     
-    # Creacion del frame para los botones y elementos de entrada
+    # Creación del frame para los botones y elementos de entrada
     input_frame = Frame(window)
     input_frame.pack()
     
