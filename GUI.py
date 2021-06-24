@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
-from functools import partial
+import tkinter.font as tkFont
 import numpy as np
 import pyaudio
 import wave
@@ -223,19 +223,23 @@ def Record():
     result_lbl.configure(text="La vocal es: "+result)
 
 if __name__ == '__main__':
-
+    # creacion de la ventana de tkinter 
     window = Tk()
     window.title("Deteccion de vocales")
+    window.geometry('500x300')
     
+    # Creacion del frame para los botones y elementos de entrada
     input_frame = Frame(window)
     input_frame.pack()
     
+    
+    fontStyle = tkFont.Font(family="Lucida Grande", size=22)
     # Botones de interfaz
-    input_lbl = Label(input_frame, text="Ingresa un audio:")
-    search_btn = Button(input_frame, text="Buscar", command=Select_file)
-    record_btn = Button(input_frame, text="Grabar", command=Record)
-    play_btn = Button(input_frame, text="Reproducir", command=Play_record)
-    gender_lbl = Label(input_frame, text="Selecciona una opcion: ")
+    input_lbl = Label(input_frame, text="Ingresa un audio:", font=fontStyle)
+    search_btn = Button(input_frame, text="Buscar", command=Select_file, font=fontStyle, bg='#428df5')
+    record_btn = Button(input_frame, text="Grabar", command=Record, font=fontStyle, bg='#f54e42')
+    play_btn = Button(input_frame, text="Reproducir", command=Play_record, font=fontStyle, bg='#25cf2e')
+    gender_lbl = Label(input_frame, text="Selecciona una opcion: ", font=fontStyle)
     
     option = StringVar()
     gender_combo = ttk.Combobox(input_frame,textvariable=option, 
@@ -244,9 +248,9 @@ if __name__ == '__main__':
                                 "Femenino"
                             ])    
     
-    exec_btn = Button(input_frame, text="Ejecutar", command=Run)
+    exec_btn = Button(input_frame, text="Ejecutar", command=Run, font=fontStyle)
     
-    
+    # Posicionamiento de los widgets dentro de la interfaz mediante grid
     input_lbl.grid(row=1,column=1)
     search_btn.grid(row=1,column=2)
     record_btn.grid(row=2,column=1)
@@ -255,12 +259,15 @@ if __name__ == '__main__':
     gender_combo.grid(row=3,column=2)
     exec_btn.grid(row=4,column=1)
     
+    # Seleccion predeterminada de combobox
     gender_combo.current(1)
     
+    # Creacion de un frame para el resultado 
     result_frame = Frame(window)
     result_frame.pack()
     
-    result_lbl = Label(result_frame, text="Resultado")
+    fontStyle2 = tkFont.Font(family="Lucida Grande", size=32)
+    result_lbl = Label(result_frame, text="Resultado", font=fontStyle2)
     result_lbl.pack()
 
     
